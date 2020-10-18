@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Reddit;
 using Reddit.Things;
 
-namespace RedditBotDetector {
+namespace RedditBotDetector.Extensions {
     public static class PostExtensions {
         public static IEnumerable<Post> GetPosts(this IEnumerable<CommentOrPost> corp) {
             return corp.Where(item => item.Post != null).Select(item => item.Post);
-        }
-
-        public static Reddit.Controllers.Post Load(this Post post, RedditClient client) {
-            return client.Post(post.Name).About();
         }
 
         public static IEnumerable<Reddit.Controllers.Post> Top(this IEnumerable<Reddit.Controllers.Post> posts, int count) {
