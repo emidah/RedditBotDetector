@@ -4,11 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace RedditBotDetector {
     public static class ServiceProviderBuilder {
-        public static IServiceProvider GetServiceProvider(string[] args) {
+        public static IServiceProvider GetServiceProvider() {
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .AddUserSecrets(typeof(Program).Assembly)
-                .AddCommandLine(args)
                 .Build();
             var services = new ServiceCollection();
 

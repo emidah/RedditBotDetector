@@ -19,7 +19,7 @@ namespace RedditBotDetector {
                 return 1;
             }
 
-            var services = ServiceProviderBuilder.GetServiceProvider(args);
+            var services = ServiceProviderBuilder.GetServiceProvider();
             var secrets = services.GetRequiredService<IOptions<Secrets>>().Value;
 
             var reddit = new RedditClient(secrets.AppId, appSecret: secrets.ClientSecret, refreshToken: secrets.RefreshToken,
@@ -39,7 +39,7 @@ namespace RedditBotDetector {
             var posts = postsOrComments
                 .GetPosts()
                 .ToList();
-            List<(LinkPost post, Post)> reposts;
+            List<RepostPost> reposts;
             if (posts.Count > 0) {
                 // Check which of the user's posts are reposts
                 reposts = RepostDetector.GetRepostsForPosts(reddit, posts);
@@ -53,7 +53,7 @@ namespace RedditBotDetector {
                 .GetComments()
                 .ToList();
 
-            List<(Comment originalComment, Post post)> fakeCommentsWithPosts;
+            List<RepostComment> fakeCommentsWithPosts;
             if (comments.Count > 0) {
                 fakeCommentsWithPosts = RepostDetector.GetRepostsForComments(comments, reddit);
                 Console.WriteLine($"Comments: {fakeCommentsWithPosts.Count} out of {comments.Count} are reposts");
