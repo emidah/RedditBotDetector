@@ -1,0 +1,4 @@
+[submodule "modules/Reddit.NET"]
+	path = modules/Reddit.NET
+	url = https://github.com/emidah/Reddit.NET.git
+	branch = emidah_Issue114PR
