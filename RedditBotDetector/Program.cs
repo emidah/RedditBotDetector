@@ -39,9 +39,9 @@ namespace RedditBotDetector {
 
             // Check which of the user's posts are reposts
             var reposts = posts.Select(post =>
-                    (post, post.GetDuplicates(limit: 25, sort: "num_comments")
+                    (post, reddit.Search(q: post.Title, limit: 25, sort: "num_comments")
                         .Top(10)
-                        .FirstOrDefault(post.IsRepostOf)))
+                        .FirstOrDefault(oldPost => post.Listing.IsRepostOf(oldPost.Listing))))
                 .Where(tuple => tuple.Item2 != null)
                 .ToList();
             Console.WriteLine($"Posts: {reposts.Count} out of {posts.Count} are reposts");
@@ -61,8 +61,8 @@ namespace RedditBotDetector {
 
             // get duplicate posts, and from duplicate posts get some top comments
             var commentsWithPostAndCommentsFromDuplicates = commentsWithPosts
-                .Select(tuple => (tuple.originalComment, tuple.post, tuple.post
-                    .GetDuplicates(limit: 25, sort: "num_comments")
+                .Select(tuple => (tuple.originalComment, tuple.post, 
+                    reddit.Search(q: tuple.post.Title, limit: 25, sort: "num_comments")
                     .Top(10)
                     .GetTopCommentsFlattened(50, 3)
                     .ToList()))

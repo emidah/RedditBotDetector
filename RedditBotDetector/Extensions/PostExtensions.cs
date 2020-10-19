@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Reddit.Controllers;
+using Reddit.Inputs.Wiki;
 using Reddit.Things;
 using Post = Reddit.Things.Post;
+using Subreddit = Reddit.Controllers.Subreddit;
 
 namespace RedditBotDetector.Extensions {
     public static class PostExtensions {
@@ -24,8 +27,31 @@ namespace RedditBotDetector.Extensions {
                 .ToList();
         }
 
-        public static bool IsRepostOf(this Reddit.Controllers.Post self, Reddit.Controllers.Post other) {
-            return self.Created > other.Created && self.Subreddit == other.Subreddit;
+        public static bool IsRepostOf(this Post self, Post other) {
+            if (self.Id == other.Id) {
+                return false;
+            }
+            // This is method is completely based on observed bot patterns. It might not make sense to the untrained eye.
+            // Bots often crosspost between nononono and wcgw because of the similarity of the subreddits. They often edit the title when doing so.
+            var subredditsToMatch = new List<string>(){ self.Subreddit.ToUpperInvariant() };
+            var shortenedTitle = self.Title.EndsWith('.') ? self.Title.Substring(0, self.Title.Length - 1).Trim() : self.Title;
+            switch (self.Subreddit.ToUpperInvariant()){
+                case "NONONONO":
+                    subredditsToMatch.Add("WHATCOULDGOWRONG");
+                    break;
+                case "WHATCOULDGOWRONG":
+                    shortenedTitle = shortenedTitle.Replace("wcgw", "", StringComparison.InvariantCultureIgnoreCase).Trim();
+                    subredditsToMatch.Add("NONONONO");
+                    break;
+                case "PETTHEDAMNCOW":
+                    subredditsToMatch.Add("HAPPYCOWGIFS");
+                    break;
+                case "HAPPYCOWGIFS":
+                    subredditsToMatch.Add("PETTHEDAMNCOW");
+                    break;
+            }
+            var isClonedTitle = self.Title == other.Title || other.Title.Contains(shortenedTitle);
+            return self.CreatedUTC > other.CreatedUTC && subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant()) && isClonedTitle;
         }
 
         /// <summary>
