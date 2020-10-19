@@ -27,7 +27,7 @@ namespace RedditBotDetector.Extensions {
                 .ToList();
         }
 
-        public static bool IsRepostOf(this Post self, Post other) {
+        public static bool IsRepostOf(this Reddit.Controllers.Post self, Reddit.Controllers.Post other) {
             if (self.Id == other.Id) {
                 return false;
             }
@@ -51,7 +51,26 @@ namespace RedditBotDetector.Extensions {
                     break;
             }
             var isClonedTitle = self.Title == other.Title || other.Title.Contains(shortenedTitle);
-            return self.CreatedUTC > other.CreatedUTC && subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant()) && isClonedTitle;
+            return self.Created > other.Created && subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant()) && isClonedTitle;
+        }
+
+        public static bool HasSameLink(this Reddit.Controllers.Post self, Reddit.Controllers.Post other) {
+            if (self is LinkPost lp && other is LinkPost lp2) {
+                var url1 = NormalizeUrl(lp.URL);
+                var url2 = NormalizeUrl(lp2.URL);
+                return url1 == url2;
+            }
+            return false;
+        }
+
+        private static string NormalizeUrl(string url1) {
+            if (url1.StartsWith("https")) {
+                return url1;
+            }
+            if (url1.StartsWith("http")) {
+                return "https" + url1.Substring(4);
+            }
+            return url1;
         }
 
         /// <summary>
