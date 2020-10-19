@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Reddit;
+using Reddit.Controllers;
 using RedditBotDetector.Extensions;
+using Comment = Reddit.Things.Comment;
 
 namespace RedditBotDetector {
     internal class Program {
@@ -25,7 +28,7 @@ namespace RedditBotDetector {
             Console.WriteLine($"Checking /u/{userName}");
 
             var user = reddit.User(userName);
-            var postsOrComments = user.GetOverview(limit: 10).ToList();
+            var postsOrComments = user.GetOverview(limit: 11).ToList();
             var totalPostsOrComments = postsOrComments.Count;
             if (totalPostsOrComments == 0) {
                 Console.WriteLine("This user has no posts or comments");
@@ -36,9 +39,10 @@ namespace RedditBotDetector {
             var posts = postsOrComments
                 .GetPosts()
                 .ToList();
+            List<(LinkPost post, Post)> reposts;
             if (posts.Count > 0) {
                 // Check which of the user's posts are reposts
-                var reposts = RepostDetector.GetRepostsForPosts(reddit, posts);
+                reposts = RepostDetector.GetRepostsForPosts(reddit, posts);
                 Console.WriteLine($"Posts: {reposts.Count} out of {posts.Count} are reposts");
             } else {
                 Console.WriteLine("Posts: 0 posts in user's recent 10");
@@ -49,8 +53,9 @@ namespace RedditBotDetector {
                 .GetComments()
                 .ToList();
 
+            List<(Comment originalComment, Post post)> fakeCommentsWithPosts;
             if (comments.Count > 0) {
-                var fakeCommentsWithPosts = RepostDetector.GetRepostsForComments(comments, reddit);
+                fakeCommentsWithPosts = RepostDetector.GetRepostsForComments(comments, reddit);
                 Console.WriteLine($"Comments: {fakeCommentsWithPosts.Count} out of {comments.Count} are reposts");
             } else {
                 Console.WriteLine("Comments: 0 comments in user's recent 10");

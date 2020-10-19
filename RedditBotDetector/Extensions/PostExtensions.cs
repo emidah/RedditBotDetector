@@ -24,6 +24,7 @@ namespace RedditBotDetector.Extensions {
                     .Select(comment => comment.Listing)
                     .ToList()
                     .GetCommentsRecursive())
+                .Where(item => item.Body != null)
                 .ToList();
         }
 
