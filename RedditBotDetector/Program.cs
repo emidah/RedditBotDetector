@@ -61,11 +61,12 @@ namespace RedditBotDetector {
 
             // get duplicate posts, and from duplicate posts get some top comments
             var commentsWithPostAndCommentsFromDuplicates = commentsWithPosts
-                .Select(tuple => (tuple.originalComment, tuple.post, 
-                    reddit.Search(q: tuple.post.Title, limit: 25, sort: "num_comments")
-                    .Top(10)
-                    .GetTopCommentsFlattened(50, 3)
-                    .ToList()))
+                .Select(tuple => (tuple.originalComment, tuple.post,
+                    reddit.Search(tuple.post.Title, limit: 25, sort: "num_comments")
+                        .Where(post => post.Id != tuple.post.Id)
+                        .Top(10)
+                        .GetTopCommentsFlattened(50, 3)
+                        .ToList()))
                 .Cast<(Comment originalComment, Post post, List<Comment> commentsFromDupes)>().ToList();
 
             // Only keep comments where the duplicate post comments contain the original comment
