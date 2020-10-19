@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedditBotDetector", "Reddit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reddit.NET", "modules\Reddit.NET\src\Reddit.NET\Reddit.NET.csproj", "{4BD9D2A9-3216-45AD-A893-4EB78C6804C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KarmaBotDetectorApi", "KarmaBotDetectorApi\KarmaBotDetectorApi.csproj", "{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{4BD9D2A9-3216-45AD-A893-4EB78C6804C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4BD9D2A9-3216-45AD-A893-4EB78C6804C5}.Release|x64.ActiveCfg = Release|Any CPU
 		{4BD9D2A9-3216-45AD-A893-4EB78C6804C5}.Release|x64.Build.0 = Release|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Debug|x64.Build.0 = Debug|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Release|x64.ActiveCfg = Release|Any CPU
+		{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
