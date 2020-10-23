@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedditBotDetector", "RedditBotDetector\RedditBotDetector.csproj", "{F491FC9B-05A5-435E-B5B4-DF665262A57B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarmaBotDetector", "RedditBotDetector\KarmaBotDetector.csproj", "{F491FC9B-05A5-435E-B5B4-DF665262A57B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reddit.NET", "modules\Reddit.NET\src\Reddit.NET\Reddit.NET.csproj", "{4BD9D2A9-3216-45AD-A893-4EB78C6804C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KarmaBotDetectorApi", "KarmaBotDetectorApi\KarmaBotDetectorApi.csproj", "{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KarmaBotDetectorApi", "KarmaBotDetectorApi\KarmaBotDetectorApi.csproj", "{EFEDBB34-5ADA-4C45-903D-70A66B42F79E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

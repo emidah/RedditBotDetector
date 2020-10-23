@@ -17,6 +17,10 @@ namespace RedditBotDetector.Extensions {
             return posts.OrderByDescending(post => post.UpVotes).Take(count);
         }
 
+        public static IEnumerable<Post> Top(this IEnumerable<Post> posts, int count) {
+            return posts.OrderByDescending(post => post.Ups).Take(count);
+        }
+
         public static IEnumerable<Reddit.Things.Comment> GetTopCommentsFlattened(this IEnumerable<Reddit.Controllers.Post> posts, int count, int depth = 1) {
             return posts
                 .SelectMany(post => post.Comments
@@ -28,9 +32,12 @@ namespace RedditBotDetector.Extensions {
                 .ToList();
         }
 
-        public static bool IsRepostOf(this Reddit.Controllers.Post self, Reddit.Controllers.Post other) {
+        public static bool IsRepostOf(this Post self, Post other) {
             if (self.Id == other.Id) {
                 return false;
+            }
+            if (self.URL == other.URL) {
+                return true;
             }
             // This is method is completely based on observed bot patterns. It might not make sense to the untrained eye.
             // Bots often crosspost between nononono and wcgw because of the similarity of the subreddits. They often edit the title when doing so.
@@ -52,7 +59,19 @@ namespace RedditBotDetector.Extensions {
                     break;
             }
             var isClonedTitle = self.Title == other.Title || other.Title.Contains(shortenedTitle);
-            return self.Created > other.Created && subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant()) && isClonedTitle;
+            if (!isClonedTitle) {
+                var words = other.Title.ToUpperInvariant().Split(" ");
+                if (words.Length >= 2) {
+                    var matches = words.Count(word => self.Title.ToUpperInvariant().Contains(word));
+                    var percentageMatches = (double) matches / words.Length * 100;
+                    if (percentageMatches > 70) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            return self.CreatedUTC > other.CreatedUTC && subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant());
         }
 
         public static bool HasSameLink(this Reddit.Controllers.Post self, Reddit.Controllers.Post other) {

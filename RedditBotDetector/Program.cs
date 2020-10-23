@@ -4,9 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Reddit;
-using Reddit.Controllers;
 using RedditBotDetector.Extensions;
-using Comment = Reddit.Things.Comment;
 
 namespace RedditBotDetector {
     internal class Program {
