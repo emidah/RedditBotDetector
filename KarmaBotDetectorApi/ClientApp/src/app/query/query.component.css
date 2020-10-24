@@ -1,5 +1,16 @@
 .resultContainer {
-  width: 70vw;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.resultContainer td {
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultContainer td:nth-child(2){
+  width: 5em;
 }
 
 .loading {

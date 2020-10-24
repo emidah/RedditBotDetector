@@ -26,13 +26,13 @@
     <tbody>
       <tr *ngFor="let post of posts">
         <td>
-          <a href="{{ post.url }}">{{ post.url }}</a>
+          <a href="{{ post.url }}" target="_blank">{{ post.url }}</a>
         </td>
         <td>
           {{ post.originalUrl == null ? "no" : "yes" }}
         </td>
         <td>
-          <a href="{{ post.originalUrl }}">{{ post.originalUrl }}</a>
+          <a href="{{ post.originalUrl }}" target="_blank">{{ post.originalUrl }}</a>
         </td>
       </tr>
     </tbody>
@@ -49,13 +49,13 @@
     <tbody>
     <tr *ngFor="let comment of comments">
       <td>
-        <a href="{{comment.url}}">{{ comment.url }}</a>
+        <a href="{{comment.url}}" target="_blank">{{ comment.url }}</a>
       </td>
       <td>
         {{ comment.originalUrl == null ? "no" : "yes" }}
       </td>
       <td>
-        <a href="{{comment.url}}">{{ comment.originalUrl }}</a>
+        <a href="{{comment.url}}" target="_blank">{{ comment.originalUrl }}</a>
         </td>
       </tr>
     </tbody>
