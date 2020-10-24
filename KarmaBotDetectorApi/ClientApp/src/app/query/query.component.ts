@@ -24,16 +24,16 @@ export class FetchDataComponent {
       this.isFetching = false;
       this.posts = result["posts"].map((rawPost: any): IPost => {
         const post: IPost = {
-          url: FetchDataComponent.redditUrl + rawPost.post?.permalink,
-          originalUrl: FetchDataComponent.redditUrl + rawPost.originalPost?.permalink
+          url: FetchDataComponent.redditUrl + rawPost.post.permalink,
+          originalUrl: rawPost?.originalPost?.permalink ? FetchDataComponent.redditUrl + rawPost.originalPost.permalink : null
         }
         return post;
       });
       this.comments = result["comments"].map((rawPost: any): IPost => {
         const post: IComment = {
-          url: FetchDataComponent.redditUrl + rawPost.comment?.permalink,
-          postUrl: FetchDataComponent.redditUrl + rawPost.commentPost?.permalink,
-          originalUrl: FetchDataComponent.redditUrl + rawPost.originalComment?.permalink
+          url: FetchDataComponent.redditUrl + rawPost.comment.permalink,
+          postUrl: FetchDataComponent.redditUrl + rawPost.commentPost.permalink,
+          originalUrl: rawPost.originalComment?.permalink ? FetchDataComponent.redditUrl + rawPost.originalComment.permalink : null
         }
         return post;
       });
