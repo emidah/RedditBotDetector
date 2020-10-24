@@ -53,7 +53,9 @@ namespace RedditBotDetector {
 
             List<RepostComment> fakeCommentsWithPosts;
             if (comments.Count > 0) {
-                fakeCommentsWithPosts = RepostDetector.GetRepostsForComments(comments, reddit);
+                fakeCommentsWithPosts = RepostDetector.GetRepostsForComments(comments, reddit)
+                    .Where(post => post.OriginalComment != null)
+                    .ToList();
                 Console.WriteLine($"Comments: {fakeCommentsWithPosts.Count} out of {comments.Count} are reposts");
             } else {
                 Console.WriteLine("Comments: 0 comments in user's recent 10");

@@ -21,7 +21,6 @@ namespace RedditBotDetector {
                         Post = post.Listing,
                         OriginalPost = SearchForPost(reddit, post.Listing)
                     })
-                .Where(post => post.OriginalPost != null)
                 .ToList();
             return reposts;
         }
@@ -48,7 +47,7 @@ namespace RedditBotDetector {
             var searchTerms = GenerateAlternativeSearchTerms(title, phraseLength, phraseCount);
 
             List<Reddit.Controllers.Post> SearchFun(string term) {
-                return reddit.Search(term, limit: 50, sort: "relevance").ToList();
+                return reddit.Search(term, limit: 25, sort: "relevance").ToList();
             }
 
             var reposts = SearchFun(title).ToList();
@@ -137,7 +136,6 @@ namespace RedditBotDetector {
                     OriginalComment = tuple.commentsFromDupes
                         .FirstOrDefault(comment => NormalizeCommentBody(comment.Body) == NormalizeCommentBody(tuple.comment.Body))
                 })
-                .Where(repost => repost.OriginalComment != null)
                 .ToList();
             return fakeCommentsWithPosts;
         }
