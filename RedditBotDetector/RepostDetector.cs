@@ -10,6 +10,7 @@ using Reddit.Controllers;
 using RedditBotDetector.Extensions;
 using Comment = Reddit.Things.Comment;
 using Post = Reddit.Things.Post;
+// ReSharper disable UnusedMember.Local
 
 namespace RedditBotDetector {
     internal static class RepostDetector {
@@ -46,8 +47,12 @@ namespace RedditBotDetector {
             var title = NormalizeTitle(post.Title);
             var searchTerms = GenerateAlternativeSearchTerms(title, phraseLength, phraseCount);
 
-            List<Reddit.Controllers.Post> SearchFun(string term) {
-                return reddit.Search(term, limit: 25, sort: "relevance").ToList();
+            List<Reddit.Controllers.Post> SearchFun(string term, string subreddit = null) {
+                const int limit = 25;
+                if (subreddit == null) {
+                    return reddit.Search(term, limit: limit, sort: "relevance").ToList();
+                }
+                return reddit.Subreddit(subreddit).Search(term, limit: limit, sort: "relevance");
             }
 
             var reposts = SearchFun(title).ToList();
@@ -57,6 +62,16 @@ namespace RedditBotDetector {
                     return repostsToReturn;
                 }
             }
+
+            var subReposts = SearchFun(title, post.Subreddit).ToList();
+            if (searchForOne) {
+                var repostsToReturn = subReposts.Where(item => post.IsRepostOf(item.Listing)).ToList();
+                if (repostsToReturn.Count > 0) {
+                    return repostsToReturn;
+                }
+            }
+
+            reposts = reposts.Concat(subReposts).ToList();
 
             foreach (var searchTerm in searchTerms) {
                 var searchAgain = SearchFun(searchTerm);
@@ -69,6 +84,7 @@ namespace RedditBotDetector {
                     reposts = reposts.Concat(searchAgain).ToList();
                 }
             }
+
             return searchForOne ? new List<Reddit.Controllers.Post>() : reposts.Where(item => post.IsRepostOf(item.Listing)).ToList();
         }
 
@@ -84,6 +100,7 @@ namespace RedditBotDetector {
                         randoms.Add(randomInt);
                     }
                 }
+
                 searchTerms = randoms
                     .Select(i => string.Join(' ', words[new Range(i, i + phraseLength)]))
                     .ToArray();

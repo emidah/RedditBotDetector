@@ -33,11 +33,8 @@ namespace RedditBotDetector.Extensions {
         }
 
         public static bool IsRepostOf(this Post self, Post other) {
-            if (self.Id == other.Id) {
+            if (self.Id == other.Id || self.CreatedUTC < other.CreatedUTC) {
                 return false;
-            }
-            if (self.URL == other.URL) {
-                return true;
             }
             // This is method is completely based on observed bot patterns. It might not make sense to the untrained eye.
             // Bots often crosspost between nononono and wcgw because of the similarity of the subreddits. They often edit the title when doing so.
@@ -58,20 +55,22 @@ namespace RedditBotDetector.Extensions {
                     subredditsToMatch.Add("PETTHEDAMNCOW");
                     break;
             }
+            var isSameUrl = self.URL == other.URL;
             var isClonedTitle = self.Title == other.Title || other.Title.Contains(shortenedTitle);
-            if (!isClonedTitle) {
+            if (!isClonedTitle && !isSameUrl) {
                 var words = other.Title.ToUpperInvariant().Split(" ");
                 if (words.Length >= 2) {
                     var matches = words.Count(word => self.Title.ToUpperInvariant().Contains(word));
                     var percentageMatches = (double) matches / words.Length * 100;
-                    if (percentageMatches > 70) {
-                        return true;
+                    if (percentageMatches < 70) {
+                        return false;
                     }
+                } else {
+                    return false;
                 }
-                return false;
             }
 
-            return self.CreatedUTC > other.CreatedUTC && subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant());
+            return subredditsToMatch.Contains(other.Subreddit.ToUpperInvariant());
         }
 
         public static bool HasSameLink(this Reddit.Controllers.Post self, Reddit.Controllers.Post other) {
