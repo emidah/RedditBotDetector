@@ -15,23 +15,23 @@ namespace RedditBotDetector.Library {
             userAgent: UserAgent);
         private const string UserAgent = "dotnet:KarmaBotDetector:v0.1";
 
-        public static RepostReport CheckUser(string userName) {
+        public static RepostReport CheckUser(string userName, bool isExtensive = false) {
             lock(LockObject) {
                 var user = Client.User(userName);
-                var postsOrComments = user.GetOverview(limit: 11).ToList();
+                var postsOrComments = user.GetOverview(limit: 10).ToList();
 
                 // Get which posts are reposts
                 var posts = postsOrComments
                     .GetPosts()
                     .ToList();
-                IList<RepostPost> reposts = RepostDetector.GetRepostsForPosts(Client, posts);
+                IList<RepostPost> reposts = RepostDetector.GetRepostsForPosts(Client, posts, isExtensive);
 
                 // Get which comments are stolen from previous submissions of the parent posts
                 var comments = postsOrComments
                     .GetComments()
                     .ToList();
 
-                IList<RepostComment> repostComments = RepostDetector.GetRepostsForComments(comments, Client);
+                IList<RepostComment> repostComments = RepostDetector.GetRepostsForComments(comments, Client, isExtensive);
 
                 return new RepostReport {
                     Posts = reposts,

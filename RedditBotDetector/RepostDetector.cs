@@ -10,35 +10,38 @@ using Reddit.Controllers;
 using RedditBotDetector.Extensions;
 using Comment = Reddit.Things.Comment;
 using Post = Reddit.Things.Post;
+
 // ReSharper disable UnusedMember.Local
 
 namespace RedditBotDetector {
     internal static class RepostDetector {
-        public static List<RepostPost> GetRepostsForPosts(RedditClient reddit, List<Post> posts) {
+        public static List<RepostPost> GetRepostsForPosts(RedditClient reddit, List<Post> posts, bool isExtensive = false) {
             var reposts = posts.Select(post => reddit.Post(post.Name).About())
                 .OfType<LinkPost>()
                 .Select(post =>
                     new RepostPost {
                         Post = post.Listing,
-                        OriginalPost = SearchForPost(reddit, post.Listing)
+                        OriginalPost = SearchForPost(reddit, post.Listing, isExtensive)
                     })
                 .ToList();
             return reposts;
         }
 
-        private static List<Post> SearchForPosts(RedditClient reddit, Post post) {
-            return SearchForPostController(reddit, post).Select(p => p.Listing).ToList();
+        private static List<Post> SearchForPosts(RedditClient reddit, Post post, bool isExtensive) {
+            return SearchForPostController(reddit, post, isExtensive).Select(p => p.Listing).ToList();
         }
 
-        private static Post SearchForPost(RedditClient reddit, Post post) {
-            return SearchForPostController(reddit, post).Select(p => p.Listing).FirstOrDefault();
+        private static Post SearchForPost(RedditClient reddit, Post post, bool isExtensive) {
+            return SearchForPostController(reddit, post, isExtensive, true).Select(p => p.Listing).FirstOrDefault();
         }
 
-        private static List<Reddit.Controllers.Post> SearchForPostController(RedditClient reddit, Reddit.Controllers.Post post) {
-            return SearchForPostController(reddit, post.Listing);
+        private static List<Reddit.Controllers.Post> SearchForPostController(RedditClient reddit, Reddit.Controllers.Post post,
+            bool isExtensive) {
+            return SearchForPostController(reddit, post.Listing, isExtensive);
         }
 
-        private static List<Reddit.Controllers.Post> SearchForPostController(RedditClient reddit, Post post, bool searchForOne = false) {
+        private static List<Reddit.Controllers.Post> SearchForPostController(RedditClient reddit, Post post, bool isExtensive,
+            bool searchForOne = false) {
             //workaround for reddit's horrible search
 
             const int phraseLength = 3;
@@ -52,6 +55,7 @@ namespace RedditBotDetector {
                 if (subreddit == null) {
                     return reddit.Search(term, limit: limit, sort: "relevance").ToList();
                 }
+
                 return reddit.Subreddit(subreddit).Search(term, limit: limit, sort: "relevance");
             }
 
@@ -72,16 +76,17 @@ namespace RedditBotDetector {
             }
 
             reposts = reposts.Concat(subReposts).ToList();
-
-            foreach (var searchTerm in searchTerms) {
-                var searchAgain = SearchFun(searchTerm);
-                if (searchForOne) {
-                    var repostsToReturn = searchAgain.Where(item => post.IsRepostOf(item.Listing)).ToList();
-                    if (repostsToReturn.Count > 0) {
-                        return searchAgain;
+            if (isExtensive) {
+                foreach (var searchTerm in searchTerms) {
+                    var searchAgain = SearchFun(searchTerm);
+                    if (searchForOne) {
+                        var repostsToReturn = searchAgain.Where(item => post.IsRepostOf(item.Listing)).ToList();
+                        if (repostsToReturn.Count > 0) {
+                            return searchAgain;
+                        }
+                    } else {
+                        reposts = reposts.Concat(searchAgain).ToList();
                     }
-                } else {
-                    reposts = reposts.Concat(searchAgain).ToList();
                 }
             }
 
@@ -131,7 +136,7 @@ namespace RedditBotDetector {
 
 
         [SuppressMessage("ReSharper", "RedundantEnumerableCastCall")]
-        public static List<RepostComment> GetRepostsForComments(List<Comment> comments, RedditClient reddit) {
+        public static List<RepostComment> GetRepostsForComments(List<Comment> comments, RedditClient reddit, bool isExtensive = false) {
             // get posts related to comments
             var commentsWithPosts = comments
                 .Select(originalComment => (originalComment, reddit.GetPostForCommentListing(originalComment)))
@@ -139,7 +144,7 @@ namespace RedditBotDetector {
             // get duplicate posts, and from duplicate posts get some top comments
             var commentsWithPostAndCommentsFromDuplicates = commentsWithPosts
                 .Select(tuple => (tuple.comment, tuple.post,
-                    SearchForPostController(reddit, tuple.post.Listing)
+                    SearchForPostController(reddit, tuple.post.Listing, isExtensive)
                         .Top(5)
                         .GetTopCommentsFlattened(50, 3)
                         .ToList()))

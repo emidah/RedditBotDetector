@@ -9,8 +9,8 @@
   text-overflow: ellipsis;
 }
 
-.resultContainer td:nth-child(2){
-  width: 5em;
+.resultContainer .repostColumn{
+  width: 7em;
 }
 
 .loading {
